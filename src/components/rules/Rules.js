@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import RulesList from './RulesList';
 import './rules.css';
 
-const rules = document.querySelector('.rules');
+/*const rules = document.querySelector('.rules');*/
 
 export default class Rules extends Component {
   render() {

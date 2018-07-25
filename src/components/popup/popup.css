@@ -1,4 +1,4 @@
-.popup { 
+.popup {
   display: none;
   position: fixed;
   width: 460px;
@@ -19,10 +19,6 @@
   background-color: white;
   box-shadow: 0 5px 20px 0 #32CD52;
   box-sizing: border-box;
-}
-
-.popup__wrapper--failure {
-  box-shadow: 0 5px 20px 0 #DC143C;
 }
 
 .popup__title {
@@ -65,10 +61,6 @@
   text-align: center;
   line-height: 24px;
   margin: 20px 0 40px;
-}
-
-.popup__text--failure {
-  font-size: 24px;
 }
 
 .popup__btn {

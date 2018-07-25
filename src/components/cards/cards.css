@@ -10,6 +10,10 @@
   z-index: 1;
 }
 
+.cards--show {
+  display: block;
+}
+
 .cards__wrapper {
   width: 90%;
   margin: 0 auto;

@@ -1,10 +1,15 @@
 .form {
+  display: block;
   position: relative;
   width: 100%;
   max-width: 1500px;
   margin: 0 auto;
   margin-bottom: 20px;
   background-image: linear-gradient(to right, #66CDAA 0%, #AFEEEE 60%, #F0FFFF 100%);
+}
+
+.form--hidden {
+  display: none;
 }
 
 .form__wrapper {
@@ -117,17 +122,21 @@
   color: #fff;
   font-size: 20px;
   cursor: pointer;
-  background-color: #32CD52;
+  background-color: gray;
   border: none;
   overflow: hidden;
   outline: none;
   filter: opacity(80%);
-  }
+}
 
-  .form__btn:hover {
-    filter: opacity(100%);
-  }
+.form__btn-active {
+  background-color: #32CD52;
+}
 
-  .form__btn:active {
-    background-color: #228B22;
-  }
+.form__btn-active:hover {
+  filter: opacity(100%);
+}
+
+.form__btn-active:active {
+  background-color: #228B22;
+}

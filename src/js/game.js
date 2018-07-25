@@ -263,6 +263,10 @@ cardsItems.addEventListener('click', function(e) {
   }
 });
 
+
+
+
+
 // обработчики выделения выбранной опции
 formListShirt.addEventListener('click', function(e) {
   for (let i = 0; i < formImage.length; i++) {
@@ -280,21 +284,10 @@ formListLevel.addEventListener('click', function(e) {
   formListLevel.classList.remove('form__active');
 });
 
-// валидация на вход в игру
-btn.addEventListener('click', function(event) {
-  event.preventDefault();
-  if (document.getElementsByName('name')[0].value
-  && document.getElementsByName('surname')[0].value
-  && document.getElementsByName('email')[0].value) {
-    rules.style.display = 'none';
-    form.style.display = 'none';
-    cards.style.display = 'block';
-    init(cardsItem); // инициализация игры
-    countTime = setInterval(calcTime, 1000); // запуск таймера
-  } else {
-    failure.classList.add('popup--show');
-  }
-});
+
+
+
+
 
 // обработчики досрочного выхода из игрового поля
 let cardsBtnClickHandler = function () {
@@ -315,13 +308,6 @@ let enterPressHandler = function(event) {
 cardsBtn.addEventListener('click', cardsBtnClickHandler);
 cardsBtn.addEventListener('keydown', enterPressHandler);
 
-// обработчик закрытия попапа
-popupBtnFailure.addEventListener('click', function() {
-  if (failure.classList.contains('popup--show')) {
-    failure.classList.remove('popup--show');
-  }
-});
-
 // обработчик закрытия попапов ESC
 window.addEventListener('keydown', function(event) {
   if (event.keyCode === ESC_KEYCODE) {
@@ -329,9 +315,6 @@ window.addEventListener('keydown', function(event) {
       popupGame.classList.remove('popup--show');
       clearInterval(countTime); // остановка таймера
       closeCardsField(); // выход из игрового поля
-    }
-    if (failure.classList.contains('popup--show')) {
-      failure.classList.remove('popup--show');
     }
   }
 });

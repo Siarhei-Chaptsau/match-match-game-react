@@ -1,10 +1,15 @@
-.rules {  
+.rules {
+  display: block;
   position: relative;
   width: 100%;
   max-width: 1500px;
   margin: 0 auto;
   margin-top: 20px;
   background-image: linear-gradient(to right, #66CDAA 0%, #AFEEEE 60%, #F0FFFF 100%);
+}
+
+.rules--hidden {
+  display: none;
 }
 
 .rules__wrapper {
