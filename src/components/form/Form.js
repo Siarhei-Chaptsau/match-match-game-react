@@ -5,12 +5,7 @@ import './form.css';
 
 /*const rules = document.querySelector('.rules');
 const cards = document.querySelector('.cards');
-const form = document.querySelector('.form');
-const btn = document.querySelector('.form__btn');
-const formListShirt = document.querySelector('.form__list--shirt');
-const formImage = document.querySelectorAll('.form__image');
-const formListLevel = document.querySelector('.form__list--level');
-const formItemLevel = document.querySelectorAll('.form__text--level');*/
+const form = document.querySelector('.form');*/
 
 export default class Form extends Component {
   constructor (props) {
@@ -25,7 +20,6 @@ export default class Form extends Component {
       formValid: false,
       activeBtn: false
     }
-    this.addActiveClassBtn= this.addActiveClassBtn.bind(this);
   }
 
   handleUserInput = (e) => {
@@ -59,9 +53,10 @@ export default class Form extends Component {
 
   validateForm() {
     this.setState({ formValid: this.state.firstNameValid && this.state.lastNameValid && this.state.emailValid });
+    if (this.state.firstNameValid && this.state.lastNameValid && this.state.emailValid) { /* добавления класса для активной кнопки при прав заполнении */
+      this.setState({activeBtn: true });
+    }
   }
-
-  addActiveClassBtn() { this.setState({activeBtn: true }); } /* добавления класса для активной кнопки при клике*/
 
   /*startGameClickHandler = (e) => {
     e.preventDefault();
@@ -106,8 +101,8 @@ export default class Form extends Component {
           </div>
 
           <div className="form__btn-container">
-            <button className={this.state.activeBtn ? 'form__btn  form__btn-active' : 'form__btn'} onClick={this.addActiveClassBtn}
-                    type="submit" disabled={!this.state.formValid} /*onClick={this.startGameClickHandler}*/>
+            <button className={this.state.activeBtn ? 'form__btn  form__btn-active' : 'form__btn'} type="submit"
+                    disabled={!this.state.formValid} /*onClick={this.startGameClickHandler}*/>
                 START GAME
             </button>
           </div>

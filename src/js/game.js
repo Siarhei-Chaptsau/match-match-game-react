@@ -263,32 +263,6 @@ cardsItems.addEventListener('click', function(e) {
   }
 });
 
-
-
-
-
-// обработчики выделения выбранной опции
-formListShirt.addEventListener('click', function(e) {
-  for (let i = 0; i < formImage.length; i++) {
-    formImage[i].classList.remove('form__active');
-  }
-  e.target.classList.toggle('form__active');
-  formListShirt.classList.remove('form__active');
-});
-
-formListLevel.addEventListener('click', function(e) {
-  for (let i = 0; i < formItemLevel.length; i++) {
-    formItemLevel[i].classList.remove('form__active');
-  }
-  e.target.classList.add('form__active');
-  formListLevel.classList.remove('form__active');
-});
-
-
-
-
-
-
 // обработчики досрочного выхода из игрового поля
 let cardsBtnClickHandler = function () {
   clearInterval(countTime); // остановка таймера

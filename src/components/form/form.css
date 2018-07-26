@@ -76,25 +76,32 @@
 }
 
 .form__text {
+  display: none;
+  margin-right: 10px;
+}
+
+.form__label {
   display: block;
-  width: 100px;
+  width: 85px;
   height: 55px;
   text-align: center;
+  margin: 0 auto;
+  padding: 7px 0;
   outline: 0;
   box-sizing: border-box;
 }
 
-.form__text:hover {
+.form__label--level {
+  width: 130px;
+  padding: 17px 0;
+}
+
+.form__label:hover {
   outline: 1px solid #32CD52;
 }
 
-.form__text:active {
+.form__label:active {
   background-color: #66CDAA;
-}
-
-.form__text--level {
-  width: 130px;
-  padding: 18px 0;
 }
 
 .form__active { /* при срабатывании обработчика событий */
@@ -105,7 +112,6 @@
 .form__image {
   width: 40px;
   height: 40px;
-  padding: 7px 30px;
 }
 
 .form__btn-container {
