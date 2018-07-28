@@ -1,6 +1,10 @@
 let firstTurnedCardIndex; // дефолтное значение индекса первой карты
 let firstTurnedCardId; // дефолтное значение data-id первой карты
 
+const rules = document.querySelector('.rules');
+const cards = document.querySelector('.cards');
+const form = document.querySelector('.form');
+
 const player = { // объект с инфой игрока
   name: null,
   surname: null,
@@ -10,43 +14,6 @@ const player = { // объект с инфой игрока
 let ratingList = []; // массив всех результатов
 let ratingItem = []; // массив куда запишем имя и время
 
-let memoryObj = {}; // запоминает какую выбрали рубашку и сложность для игры
-let newArrCardsRandomAndSelected = []; // массив рандомных карт согласно опций
-const dataOfCards = [
-  {dataId: 1, backgroundImage: 'Barney_Gumble.jpg'},
-  {dataId: 2, backgroundImage: 'Clancy_Wiggum.jpg'},
-  {dataId: 3, backgroundImage: 'Bart_Simpson.jpg'},
-  {dataId: 4, backgroundImage: 'Eleanor_Abernathy.jpg'},
-  {dataId: 5, backgroundImage: 'Groundskeeper_Willie.jpg'},
-  {dataId: 6, backgroundImage: 'Homer_Simpson.jpg'},
-  {dataId: 7, backgroundImage: 'Horatio_McCallister.jpg'},
-  {dataId: 8, backgroundImage: 'Fat_Tony.jpg'},
-  {dataId: 9, backgroundImage: 'Mr_Burns.jpg'},
-  {dataId: 10, backgroundImage: 'Moe_Szyslak.jpg'},
-  {dataId: 11, backgroundImage: 'Abraham_Simpson.jpg'},
-  {dataId: 12, backgroundImage: 'Seymour_Skinner.jpg'}
-];
-
-// функция рандомного перемешивания
-Array.prototype.shuffle = function() {
-  for (let i = this.length - 1; i >= 0; i--) {
-    let randomIndex = Math.floor(Math.random() * (i + 1));
-    let itemAtIndex = this[randomIndex];
-    this[randomIndex] = this[i];
-    this[i] = itemAtIndex;
-  }
-  return this;
-}
-
-// функция создания рандомного массива согласно выбранного уровня
-function randomMixArrays(start, end) {
-  let arrCut = dataOfCards.slice(start, end);
-  let arrCopy = arrCut.slice();
-  newArrCardsRandomAndSelected = arrCut.concat(arrCopy);
-  newArrCardsRandomAndSelected.shuffle();
-  return newArrCardsRandomAndSelected;
-}
-
 const fragment = document.createDocumentFragment();
 const cardsItem = document.createElement('img');
 fragment.appendChild(cardsItem);
@@ -54,8 +21,7 @@ cardsItem.classList.add('cards__item');
 
 // функция начала игры
 function init(obj) {
-  // рандомное перемешивание первонач массива
-  dataOfCards.shuffle();
+  dataOfCards.shuffle(); // рандомное перемешивание первонач массива
   // поменять рубашку карт согласно наличию класса form__active
   for (let i = 0; i < formImage.length; i++) {
     if (formImage[i].classList.contains('form__active')) {
@@ -76,52 +42,6 @@ function init(obj) {
     addCards();
   }
   return memoryObj; // возврат объекта с инфой о выбранной рубашке и уровне сложности
-}
-
-// функция отрисовки каждой карты
-let renderCard = function (card, index) {
-  const newCard = document.createElement('img');
-  newCard.dataset.id = newArrCardsRandomAndSelected[index].dataId; // каждой карте даём id
-  newCard.dataset.bg = newArrCardsRandomAndSelected[index].backgroundImage; // сохряняем картинку в атрибут data-bg
-  newCard.style.backgroundImage = memoryObj.shirt;
-  newCard.src = 'img/transparent.png';
-  return newCard;
-};
-
-// функция добавления карт на поле
-let addCards = function () {
-  for (let i = 0; i < newArrCardsRandomAndSelected.length; i++) {
-    let elem = renderCard(newArrCardsRandomAndSelected[i], i);
-    elem.className = 'cards__item  cards__item--medium-difficulty';
-    if (newArrCardsRandomAndSelected.length < 18) {
-      elem.className = 'cards__item  cards__item--low-difficulty';
-    }
-    if (newArrCardsRandomAndSelected.length > 18) {
-      elem.className = 'cards__item  cards__item--hard-difficulty';
-    }
-    cardsItems.appendChild(elem); // добавляем карты на поле
-  }
-};
-
-// таймер
-function calcTime(sec, min, zeroing) { // при наличии 3-го парам-ра обнуляется таймер
-  sec = Number(timeInSeconds.textContent);
-  min = Number(timeInMinutes.textContent);
-  sec++;
-  if (zeroing) { sec = 0; min = 0; }
-  if (sec >= 60) { sec = 0; min++; }
-  if (sec < 10) { sec = '0' + sec; }
-  if (min < 10) { min = '0' + min; }
-  timeInSeconds.textContent = sec;
-  timeInMinutes.textContent = min;
-}
-
-// функция выхода из игрового поля
-function closeCardsField() {
-  cards.style.display = 'none';
-  rules.style.display = 'block';
-  form.style.display = 'block';
-  cardsItems.innerHTML = ''; // удаление карт
 }
 
 // функция вывода поздравлений
@@ -262,25 +182,6 @@ cardsItems.addEventListener('click', function(e) {
     }
   }
 });
-
-// обработчики досрочного выхода из игрового поля
-let cardsBtnClickHandler = function () {
-  clearInterval(countTime); // остановка таймера
-  calcTime(0, 0, 1); // обнуление таймера
-  closeCardsField(); // выход из игрового поля
-  cards.removeEventListener('click', cardsBtnClickHandler);
-}
-
-let enterPressHandler = function(event) {
-  clearInterval(countTime);
-  if (event.keyCode === ENTER_KEYCODE) {
-    closeCardsField();
-    cards.removeEventListener('keydown', enterPressHandler);
-  }
-}
-
-cardsBtn.addEventListener('click', cardsBtnClickHandler);
-cardsBtn.addEventListener('keydown', enterPressHandler);
 
 // обработчик закрытия попапов ESC
 window.addEventListener('keydown', function(event) {

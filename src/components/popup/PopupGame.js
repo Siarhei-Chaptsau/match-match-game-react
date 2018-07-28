@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './popup.css';
 
 /*const popupBtnExit = document.querySelector('.popup__btn--exit');
 const popupTime = document.querySelector('.popup__title--time'); // поле вывода результата игроку

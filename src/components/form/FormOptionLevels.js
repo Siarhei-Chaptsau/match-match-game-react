@@ -14,8 +14,8 @@ export default class FormOptionLevels extends Component {
   }
 
   render() {
-    let classNamelevel = 'form__label  form__label--level';
-    let classNameActive = 'form__label  form__label--level  form__active';
+    let classNamelevel = 'form__label form__label--level';
+    let classNameActive = 'form__label form__label--level form__active';
     return (
       <div className="form__option">
         <p className="form__title  form__title--option">Game Difficulty</p>

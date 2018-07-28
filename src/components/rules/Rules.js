@@ -1,13 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import RulesList from './RulesList';
-import './rules.css';
-
-/*const rules = document.querySelector('.rules');*/
 
 export default class Rules extends Component {
   render() {
     return (
-      <section className="rules">
+      <Fragment>
         <div className="rules__wrapper">
           <h1 className="rules__title">How to play Match Match Game</h1>
           <p className="rules__text  rules__text--general">Memory is a counter game where
@@ -16,7 +13,7 @@ export default class Rules extends Component {
           <h2 className="rules__title  rules__title--play">To Play:</h2>
           <RulesList />
         </div>
-      </section>
+      </Fragment>
     );
   }
 }

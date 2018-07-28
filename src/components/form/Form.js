@@ -1,11 +1,6 @@
-import React, { Component } from 'react';
-import FormOptionShirts from './FormOptionShirts';
+import React, { Component, Fragment } from 'react';
 import FormOptionLevels from './FormOptionLevels';
-import './form.css';
-
-/*const rules = document.querySelector('.rules');
-const cards = document.querySelector('.cards');
-const form = document.querySelector('.form');*/
+import FormOptionShirts from './FormOptionShirts';
 
 export default class Form extends Component {
   constructor (props) {
@@ -58,22 +53,9 @@ export default class Form extends Component {
     }
   }
 
-  /*startGameClickHandler = (e) => {
-    e.preventDefault();
-    if (document.getElementsByName('firstName')[0].value
-    && document.getElementsByName('lastName')[0].value
-    && document.getElementsByName('email')[0].value) {
-      rules.style.display = 'none';
-      form.style.display = 'none';
-      cards.style.display = 'block';
-      //init(cardsItem); // инициализация игры
-      //countTime = setInterval(calcTime, 1000); // запуск таймера
-    }
-  }*/
-
   render() {
     return (
-      <section className="form">
+      <Fragment>
         <div className="form__wrapper">
         <form className="form__form-container" method="post">
           <fieldset className="form__items">
@@ -102,12 +84,12 @@ export default class Form extends Component {
 
           <div className="form__btn-container">
             <button className={this.state.activeBtn ? 'form__btn  form__btn-active' : 'form__btn'} type="submit"
-                    disabled={!this.state.formValid} /*onClick={this.startGameClickHandler}*/>
+                  disabled={!this.state.formValid} onClick={() => {this.props.startGameHandler()}} >
                 START GAME
             </button>
           </div>
         </div>
-      </section>
+      </Fragment>
     );
   }
 }

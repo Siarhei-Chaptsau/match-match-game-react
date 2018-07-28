@@ -11,7 +11,15 @@
 }
 
 .cards--show {
+  position: relative;
   display: block;
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  background-image: linear-gradient(to right, #66CDAA 0%, #AFEEEE 60%, #F0FFFF 100%);
+  z-index: 1;
 }
 
 .cards__wrapper {
