@@ -4,12 +4,6 @@ import Form from './components/form/Form';
 import Cards, {init} from './components/cards/Cards';
 import PopupGame from './components/popup/PopupGame';
 
-const player = { // объект с инфой игрока
-  name: null,
-  email: null,
-  score: null
-};
-let countTime;
 let ratingList = []; // массив всех результатов
 let ratingItem = []; // массив куда запишем имя и время
 
@@ -23,48 +17,41 @@ export function outputResult() {
   const popupTable = document.querySelector('.popup__table');
   const popupGame = document.querySelector('.popup--game');
   const popupTime = document.querySelector('.popup__title--time'); // поле вывода результата игроку
-  const popupBtnExit = document.querySelector('.popup__btn--exit');
-  const popupBtnGame = document.querySelector('.popup__btn--game');
+  const minOfTimer = document.getElementById('min');
+  const secOfTimer = document.getElementById('sec');
 
-  //clearInterval(countTime); // остановка таймера
-  //popupTime.textContent = min.textContent + ' : ' + sec.textContent; // вывод результата таймера
+  popupTime.textContent = minOfTimer.textContent + secOfTimer.textContent; // вывод результата таймера
   if (!popupGame.classList.contains('popup--show') ) {
     popupGame.classList.add('popup--show');
   }
 
-  // заполняем профиль игрока в объект и добавляем в хранилище
-  // player.name = document.getElementsByName('name')[0].value;
-  // player.email = document.getElementsByName('email')[0].value;
-  //player.score = +timeInMinutes.textContent * 60 + +timeInSeconds.textContent; // перевод в секунды
-  //window.localStorage.setItem('player', JSON.stringify(player)); // в хранилище будет добавлено значение
-
   // добавляем время игрока в массив и сохраняем таблицу 10-ти лучших в хранилище
-  // ratingList = JSON.parse(window.localStorage.getItem('ratingList')); // вернёт массив значений лежащих в хранилище
-  // if (!ratingList) {
-  //   ratingList = [];
-  // }
-  // if (ratingList.length == 10) {
-  //   ratingList.sort(function(a, b) {
-  //     return a[1] - b[1];
-  //   });
-  //   ratingList = ratingList.slice(0, 9);
-  // }
-  //
-  // const nameUser = document.getElementsByName('name')[0].value;
-  // let scoreUser = +timeInMinutes.textContent * 60 + +timeInSeconds.textContent; // перевод в секунды
-  // ratingItem[0] = nameUser;
-  // ratingItem[1] = scoreUser;
-  // ratingList.push(ratingItem);
-  //
-  // if ((ratingList.length > 0) && ratingList[ratingList.length - 1][1] > scoreUser) {
-  //   ratingList[ratingList.length - 1][0] = nameUser;
-  //   ratingList[ratingList.length - 1][1] = scoreUser;
-  // }
-  // if (ratingList.length > 1) {
-  //   ratingList.sort(function(a, b) {
-  //     return a[1] - b[1];
-  //   });
-  // }
+  //ratingList = JSON.parse(window.localStorage.getItem('ratingList')); // вернёт массив значений лежащих в хранилище
+  if (!ratingList) {
+    ratingList = [];
+  }
+  if (ratingList.length === 10) {
+    ratingList.sort(function(a, b) {
+      return a[1] - b[1];
+    });
+    ratingList = ratingList.slice(0, 9);
+  }
+
+  let nameUser = document.getElementsByName('firstName')[0].value;
+  let scoreUser = minOfTimer.textContent + secOfTimer.textContent; // перевод в секунды
+  ratingItem[0] = nameUser;
+  ratingItem[1] = scoreUser;
+  ratingList.push(ratingItem);
+
+  if ((ratingList.length > 0) && ratingList[ratingList.length - 1][1] > scoreUser) {
+    ratingList[ratingList.length - 1][0] = nameUser;
+    ratingList[ratingList.length - 1][1] = scoreUser;
+  }
+  if (ratingList.length > 1) {
+    ratingList.sort(function(a, b) {
+      return b[1] - a[1];
+    });
+  }
   // window.localStorage.setItem('ratingList', JSON.stringify(ratingList)); // в хранилище будет добавлено значение
 
   // отрисовываем таблицу результатов
@@ -79,7 +66,7 @@ export function outputResult() {
     headCell.classList.add('popup__cell');
     if (i === 0) headCell.innerHTML = '№';
     if (i === 1) headCell.innerHTML = 'Name';
-    if (i === 2) headCell.innerHTML = 'Time';
+    if (i === 2) headCell.innerHTML = 'Score';
     headRow.appendChild(headCell);
   }
 
@@ -110,7 +97,7 @@ export default class App extends Component {
        timeElapsedMin: "00",
        timeElapsedSec: ":00"
     }
-    this.cards = React.createRef();
+    //this.cards = React.createRef();
   }
 
   tick = () => {
@@ -138,12 +125,12 @@ export default class App extends Component {
   }
 
   // очистка для таймера
-  componentWillUnmount = () =>  {
+  componentWillUnmount = () => {
     clearInterval(this.interval);
   }
 
   // обнуление таймера
-  reset () {
+  reset = () => {
     this.setState({
       secondsElapsed: 0,
       minutesElapsed: 0,
@@ -162,9 +149,18 @@ export default class App extends Component {
     if (popupGame.classList.contains('popup--show')) {
       popupGame.classList.remove('popup--show');
     }
-    this.setState({ startGame: !this.state.startGame });
+    this.setState({ startGame: true });
+    clearInterval(this.interval); // остановка таймера
+    this.reset(); // обнуление таймера
     this.startTimer(); // запуск таймера
     init(cardsItem); // инициализация игры
+  }
+
+  // начало игры повторно
+  startGameAgainClickHandler = () => {
+    //debugger;
+    this.scorePostFetch(); // отправить на сервер результаты игры
+    this.startGameClickHandler();
   }
 
   // выход из игры
@@ -180,6 +176,71 @@ export default class App extends Component {
     }
   }
 
+  finishSuccessGameClickHandler = () => {
+    this.scorePostFetch(); // отправить на сервер результаты игры
+    this.finishGameClickHandler();
+  }
+
+  // отправить запрос
+  scorePostFetch = () => {
+    let nameUser = document.getElementsByName('firstName')[0].value;
+    let emailUser = document.getElementsByName('email')[0].value;
+    const minOfTimer = document.getElementById('min');
+    const secOfTimer = document.getElementById('sec');
+    let scoreUser = this.state.minutesElapsed * 60 + this.state.secondsElapsed; // перевод в секунды
+    //let scoreUser = /*1000 - */ minOfTimer.textContent * 60 + secOfTimer.textContent;
+    console.log(scoreUser);
+    this.data = {};
+    fetch('https://mmg-score.herokuapp.com/', {
+      method: 'POST',
+      headers: {
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Allow-Origin': 'cors_url',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+      //username: "36",
+      //email: "ss36@ss.ru",
+      username: nameUser,
+      email: emailUser,
+      score: scoreUser
+      })
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      this.data = data;
+      console.log(this.data.message);
+    })
+    .catch(function(error) {
+      console.log('Request failed', error);
+    });
+  }
+
+  // получить запрос
+  scoreGetFetch = () => {
+    return fetch('https://mmg-score.herokuapp.com/', {
+      method: 'GET',
+    })
+    .then(function(response) {
+      return response.json();
+    })
+    .then((data) => {
+      this.setState({
+        value: this.data,
+      })
+      this.data.result.map((curr,index) => (
+        console.log(this.data.result[index].username,
+                    this.data.result[index].email,
+                    this.data.result[index].score)
+      ));
+    })
+    .catch((error) => {
+      console.log('Request failed', error);
+    });
+  }
+
   render() {
     return (
       <Fragment>
@@ -191,9 +252,9 @@ export default class App extends Component {
         </section>
         <section className={this.state.startGame === true ? 'cards--show' : 'cards'} >
           <Cards timeElapsedMin={this.state.timeElapsedMin} timeElapsedSec={this.state.timeElapsedSec}
-            startTimerClickHandler={this.startTimerClickHandler} finishGameHandler={this.finishGameClickHandler}  ref={this.cards} />
+            startTimerClickHandler={this.startTimerClickHandler} finishGameHandler={this.finishGameClickHandler}  /*ref={this.cards}*/ />
         </section>
-        <PopupGame startGameHandler={this.startGameClickHandler} finishGameHandler={this.finishGameClickHandler} />
+        <PopupGame startGameAgainHandler={this.startGameAgainClickHandler} finishGameHandler={this.finishSuccessGameClickHandler} />
       </Fragment>
     );
   }
