@@ -10,7 +10,7 @@ export default class FormOptionLevels extends Component {
   }
 
   changeLevelHandler = (e) => {
-    this.setState({ active:  e.target.value });
+    this.setState({ active: e.target.value });
   }
 
   render() {
