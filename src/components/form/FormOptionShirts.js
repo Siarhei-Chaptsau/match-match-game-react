@@ -17,8 +17,6 @@ export default class FormOptionShirts extends Component {
   }
 
   render() {
-    //let classNameShirt = 'form__label  form__label--shirt';
-    //let classNameActive = 'form__label  form__label--shirt  form__active';
     return (
       <div className="form__option">
         <p className="form__title  form__title--option">Shirt Cards</p>

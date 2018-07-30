@@ -4,64 +4,19 @@ import Form from './components/form/Form';
 import Cards, {init} from './components/cards/Cards';
 import PopupGame from './components/popup/PopupGame';
 
-let ratingList = []; // массив всех результатов
-let ratingItem = []; // массив куда запишем имя и время
-
+let ratingList = {};
 const fragment = document.createDocumentFragment();
 const cardsItem = document.createElement('img');
 fragment.appendChild(cardsItem);
 cardsItem.classList.add('cards__item');
 
-// функция вывода поздравлений
-export function outputResult() {
-  const popupTable = document.querySelector('.popup__table');
-  const popupGame = document.querySelector('.popup--game');
-  const popupTime = document.querySelector('.popup__title--time'); // поле вывода результата игроку
-  const minOfTimer = document.getElementById('min');
-  const secOfTimer = document.getElementById('sec');
+function compareNumeric(a, b) {
+  return b.score - a.score;
+}
 
-  popupTime.textContent = minOfTimer.textContent + secOfTimer.textContent; // вывод результата таймера
-  if (!popupGame.classList.contains('popup--show') ) {
-    popupGame.classList.add('popup--show');
-  }
-
-  // добавляем время игрока в массив и сохраняем таблицу 10-ти лучших в хранилище
-  //ratingList = JSON.parse(window.localStorage.getItem('ratingList')); // вернёт массив значений лежащих в хранилище
-  if (!ratingList) {
-    ratingList = [];
-  }
-  if (ratingList.length === 10) {
-    ratingList.sort(function(a, b) {
-      return a[1] - b[1];
-    });
-    ratingList = ratingList.slice(0, 9);
-  }
-
-  let nameUser = document.getElementsByName('firstName')[0].value;
-  let scoreUser = minOfTimer.textContent + secOfTimer.textContent; // перевод в секунды
-  ratingItem[0] = nameUser;
-  ratingItem[1] = scoreUser;
-  ratingList.push(ratingItem);
-
-  if ((ratingList.length > 0) && ratingList[ratingList.length - 1][1] > scoreUser) {
-    ratingList[ratingList.length - 1][0] = nameUser;
-    ratingList[ratingList.length - 1][1] = scoreUser;
-  }
-  if (ratingList.length > 1) {
-    ratingList.sort(function(a, b) {
-      return b[1] - a[1];
-    });
-  }
-  // window.localStorage.setItem('ratingList', JSON.stringify(ratingList)); // в хранилище будет добавлено значение
-
-  // отрисовываем таблицу результатов
-  const ratingTable = document.createElement('table');
-  const headRow = document.createElement('tr');
-  ratingTable.appendChild(headRow);
-  ratingTable.classList.add('popup__table-tag');
-
-  // отрисовываем шапку
-  for (let i = 0; i < 3; i++) {
+// функция создания таблицы
+function createTable(headRow, ratingTable, ratingList) {
+  for (let i = 0; i < 3; i++) { // отрисовываем шапку
     const headCell = document.createElement('th');
     headCell.classList.add('popup__cell');
     if (i === 0) headCell.innerHTML = '№';
@@ -69,22 +24,60 @@ export function outputResult() {
     if (i === 2) headCell.innerHTML = 'Score';
     headRow.appendChild(headCell);
   }
-
   for (let i = 0; i < 10; i++) {
     const tableRow = document.createElement('tr');
     ratingTable.appendChild(tableRow);
     for (let j = 0; j < 3; j++) {
       const tableCell = document.createElement('td');
       if (j === 0) tableCell.innerHTML = `${i + 1}`; // внести номер позиции
-      if (ratingList[i]) {
-        if (j === 1) tableCell.innerHTML = `${ratingList[i][0]}`; // внести имя
-        if (j === 2) tableCell.innerHTML = `${ratingList[i][1]}`; // внести время
-      }
+      if (j === 1) tableCell.innerHTML = `${ratingList[i].username}`; // внести имя
+      if (j === 2) tableCell.innerHTML = `${ratingList[i].score}`; // внести счёт
       tableCell.classList.add('popup__cell');
       tableRow.appendChild(tableCell);
     }
   }
-  popupTable.appendChild(ratingTable);
+}
+
+// получить запрос
+function getScoreFetch() {
+  return fetch('https://mmg-score.herokuapp.com/', {
+    method: 'GET',
+  })
+  .then(function(response) {
+    return response.json();
+  })
+  .then((data) => {
+    ratingList = data.result;
+    ratingList.sort(compareNumeric);
+    ratingList = ratingList.slice(0, 10);
+
+    // отрисовываем таблицу результатов
+    const popupTable = document.querySelector('.popup__table');
+    const ratingTable = document.createElement('table');
+    const headRow = document.createElement('tr');
+    ratingTable.appendChild(headRow);
+    ratingTable.classList.add('popup__table-tag');
+    createTable(headRow, ratingTable, ratingList); // создаём таблицу
+    popupTable.appendChild(ratingTable);
+  })
+  .catch((error) => {
+    console.log('Request failed', error);
+  });
+}
+
+// функция вывода поздравлений
+export function outputResult() {
+  const popupGame = document.querySelector('.popup--game');
+  const popupTime = document.querySelector('.popup__title--time'); // поле вывода результата игроку
+  const min = document.getElementById('min');
+  const sec = document.getElementById('sec');
+  const minOfTimer =  parseInt(min.textContent, 10);
+  const secOfTimer =  parseInt(sec.textContent.slice(1), 10);
+  popupTime.textContent = 3600 - minOfTimer * 60 * 10 - secOfTimer * 10; // вывод результата таймера
+  if (!popupGame.classList.contains('popup--show') ) {
+    popupGame.classList.add('popup--show');
+  }
+  getScoreFetch(); // получить запрос
 }
 
 export default class App extends Component {
@@ -97,7 +90,6 @@ export default class App extends Component {
        timeElapsedMin: "00",
        timeElapsedSec: ":00"
     }
-    //this.cards = React.createRef();
   }
 
   tick = () => {
@@ -158,8 +150,7 @@ export default class App extends Component {
 
   // начало игры повторно
   startGameAgainClickHandler = () => {
-    //debugger;
-    this.scorePostFetch(); // отправить на сервер результаты игры
+    this.postScoreFetch(); // отправить на сервер результаты игры
     this.startGameClickHandler();
   }
 
@@ -177,19 +168,16 @@ export default class App extends Component {
   }
 
   finishSuccessGameClickHandler = () => {
-    this.scorePostFetch(); // отправить на сервер результаты игры
+    this.postScoreFetch(); // отправить на сервер результаты игры
     this.finishGameClickHandler();
   }
 
   // отправить запрос
-  scorePostFetch = () => {
+  postScoreFetch = () => {
+    const popupTime = document.querySelector('.popup__title--time');
     let nameUser = document.getElementsByName('firstName')[0].value;
     let emailUser = document.getElementsByName('email')[0].value;
-    const minOfTimer = document.getElementById('min');
-    const secOfTimer = document.getElementById('sec');
-    let scoreUser = this.state.minutesElapsed * 60 + this.state.secondsElapsed; // перевод в секунды
-    //let scoreUser = /*1000 - */ minOfTimer.textContent * 60 + secOfTimer.textContent;
-    console.log(scoreUser);
+    let scoreUser = Number(popupTime.textContent);
     this.data = {};
     fetch('https://mmg-score.herokuapp.com/', {
       method: 'POST',
@@ -199,8 +187,6 @@ export default class App extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-      //username: "36",
-      //email: "ss36@ss.ru",
       username: nameUser,
       email: emailUser,
       score: scoreUser
@@ -214,31 +200,8 @@ export default class App extends Component {
       console.log(this.data.message);
     })
     .catch(function(error) {
-      console.log('Request failed', error);
-    });
-  }
-
-  // получить запрос
-  scoreGetFetch = () => {
-    return fetch('https://mmg-score.herokuapp.com/', {
-      method: 'GET',
-    })
-    .then(function(response) {
-      return response.json();
-    })
-    .then((data) => {
-      this.setState({
-        value: this.data,
-      })
-      this.data.result.map((curr,index) => (
-        console.log(this.data.result[index].username,
-                    this.data.result[index].email,
-                    this.data.result[index].score)
-      ));
-    })
-    .catch((error) => {
-      console.log('Request failed', error);
-    });
+        console.log('Request failed', error);
+      });
   }
 
   render() {
@@ -252,7 +215,7 @@ export default class App extends Component {
         </section>
         <section className={this.state.startGame === true ? 'cards--show' : 'cards'} >
           <Cards timeElapsedMin={this.state.timeElapsedMin} timeElapsedSec={this.state.timeElapsedSec}
-            startTimerClickHandler={this.startTimerClickHandler} finishGameHandler={this.finishGameClickHandler}  /*ref={this.cards}*/ />
+            startTimerClickHandler={this.startTimerClickHandler} finishGameHandler={this.finishGameClickHandler} />
         </section>
         <PopupGame startGameAgainHandler={this.startGameAgainClickHandler} finishGameHandler={this.finishSuccessGameClickHandler} />
       </Fragment>

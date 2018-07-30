@@ -6,7 +6,7 @@ export default class PopupGame extends Component {
       <section className="popup  popup--game">
         <div className="popup__wrapper">
           <h3 className="popup__title">Congratulations!</h3>
-          <h3 className="popup__title">Your Time:</h3>
+          <h3 className="popup__title">Your Score:</h3>
           <p className="popup__title  popup__title--time"></p>
           <div className="popup__table"></div>
           <button className="popup__btn  popup__btn--game" type="submit" onClick={() => {this.props.startGameAgainHandler()}} >New Game</button>

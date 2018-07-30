@@ -53,15 +53,21 @@ const objOfImages = {
   Seymour_Skinner: Seymour_Skinner
 };
 
+const pause = async (time) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time);
+  });
+};
+
 // функция рандомного перемешивания
-Array.prototype.shuffle = function() {
-  for (let i = this.length - 1; i >= 0; i--) {
+function shuffle(arr) {
+  for (let i = arr.length - 1; i >= 0; i--) {
     let randomIndex = Math.floor(Math.random() * (i + 1));
-    let itemAtIndex = this[randomIndex];
-    this[randomIndex] = this[i];
-    this[i] = itemAtIndex;
+    let itemAtIndex = arr[randomIndex];
+    arr[randomIndex] = arr[i];
+    arr[i] = itemAtIndex;
   }
-  return this;
+  return arr;
 }
 
 // функция создания рандомного массива согласно выбранного уровня
@@ -69,7 +75,7 @@ function randomMixArrays(start, end) {
   let arrCut = dataOfCards.slice(start, end);
   let arrCopy = arrCut.slice();
   newArrCardsRandomAndSelected = arrCut.concat(arrCopy);
-  newArrCardsRandomAndSelected.shuffle();
+  shuffle(newArrCardsRandomAndSelected);
   return newArrCardsRandomAndSelected;
 }
 
@@ -103,7 +109,7 @@ let addCards = function () {
 export function init(obj) {
   const formLabelsShirts = document.querySelectorAll('.form__label--shirt');
   const formLabelsLevels = document.querySelectorAll('.form__label--level');
-  dataOfCards.shuffle(); // рандомное перемешивание первонач массива
+  shuffle(dataOfCards); // рандомное перемешивание первонач массива
   for (let i = 0; i < formLabelsShirts.length; i++) { // проверка выбранной рубашки
     obj.classList.remove('cards__item--turned'); // у всех карт убрать классы переворачивания
     if (formLabelsShirts[i].classList.contains('form__label--2')) {
@@ -120,22 +126,20 @@ export function init(obj) {
     }
   }
   if (formLabelsLevels[1].classList.contains('form__active')) { // выложить карты согласно наличию form__active
-    console.log(dataOfCards);
     randomMixArrays(0, 9); // добавить 18 карт
     addCards(); // добавление карт на поле
   } else if (formLabelsLevels[2].classList.contains('form__active')) {
     randomMixArrays(); // добавить 24 карты
     addCards();
   } else {
-    randomMixArrays(0, 2); // добавить 10 карт
-    //randomMixArrays(0, 5); // добавить 10 карт // TODO: вернуть!!
+    randomMixArrays(0, 5); // добавить 10 карт
     addCards();
   }
   return memoryObj; // возврат объекта с инфой о выбранной рубашке и уровне сложности
 }
 
 // обработчик поворота карты
-let turnСardsClickHandler = (e) => {
+async function turnСardsClickHandler (e) {
   e.persist(); // позволит ссылаться на событие
   if (e.target.classList.contains('cards__item--turned') && !e.target.classList.contains('cards__items')) {
     e.target.style.backgroundImage = memoryObj.shirt; // смена картинки на рубашку
@@ -157,7 +161,6 @@ let turnСardsClickHandler = (e) => {
 
     const arrOfCards = document.querySelectorAll('.cards__item'); // массив карт
     let count = 0; // счётчик для кол-ва открытых карт
-
     for (let i = 0; i < arrOfCards.length; i++) {
       if (arrOfCards[i].classList.contains('cards__item--turned')) {
         count++;
@@ -171,32 +174,28 @@ let turnСardsClickHandler = (e) => {
         }
       }
       if (count === 2) { // если уже есть 2 открытые карты
-
         if (e.target.getAttribute('data-id') === firstTurnedCardId) { // сравниваем id активной карты и открытой, если они равны
-          setTimeout(function() {
-            e.target.style.visibility = 'hidden'; // скрываем вторую карту
-            e.target.classList.remove('cards__item--turned');
-            e.target.classList.remove('cards__item'); // убираем из массива
-            arrOfCards[firstTurnedCardIndex].style.visibility = 'hidden'; // скрываем первую карту
-            arrOfCards[firstTurnedCardIndex].classList.remove('cards__item--turned');
-            arrOfCards[firstTurnedCardIndex].classList.remove('cards__item'); // убираем из массива
-            firstTurnedCardId = null; // удаляем id первой карты
-            firstTurnedCardIndex = null; // удаляем индекс первой карты из глобальной области видимости
-          }, 500);
+          await pause(500);
+          e.target.style.visibility = 'hidden'; // скрываем вторую карту
+          e.target.classList.remove('cards__item--turned');
+          e.target.classList.remove('cards__item'); // убираем из массива
+          arrOfCards[firstTurnedCardIndex].style.visibility = 'hidden'; // скрываем первую карту
+          arrOfCards[firstTurnedCardIndex].classList.remove('cards__item--turned');
+          arrOfCards[firstTurnedCardIndex].classList.remove('cards__item'); // убираем из массива
+          firstTurnedCardId = null; // удаляем id первой карты
+          firstTurnedCardIndex = null; // удаляем индекс первой карты из глобальной области видимости
           if (arrOfCards.length < 4) { // вывод поздравлений игроку
-            setTimeout(function() {
-              outputResult();
-            }, 700);
+            await pause(1200);
+            outputResult();
           }
         } else { // если id не совпали
-          setTimeout(function() {
-            e.target.style.backgroundImage = memoryObj.shirt; // закрываем вторую карту
-            e.target.classList.toggle('cards__item--turned');
-            arrOfCards[firstTurnedCardIndex].style.backgroundImage = memoryObj.shirt; // закрываем первую карту
-            arrOfCards[firstTurnedCardIndex].classList.toggle('cards__item--turned');
-            firstTurnedCardId = null; // удаляем id первой карты из глобальной области видимости
-            firstTurnedCardIndex = null; // удаляем индекс первой карты из глобальной области видимости
-          }, 700);
+          await pause(700);
+          e.target.style.backgroundImage = memoryObj.shirt; // закрываем вторую карту
+          e.target.classList.toggle('cards__item--turned');
+          arrOfCards[firstTurnedCardIndex].style.backgroundImage = memoryObj.shirt; // закрываем первую карту
+          arrOfCards[firstTurnedCardIndex].classList.toggle('cards__item--turned');
+          firstTurnedCardId = null; // удаляем id первой карты из глобальной области видимости
+          firstTurnedCardIndex = null; // удаляем индекс первой карты из глобальной области видимости
         }
         break;
       }
@@ -210,17 +209,14 @@ export default class Cards extends Component {
     this.state = {
        active: ''
     }
-    //this.cardsItems = React.createRef();
   }
-
   render() {
-    //console.log(this.cardsItems.current);
     return (
       <Fragment>
         <div className="cards__wrapper">
           <CardsNavContainer timeElapsedMin={this.props.timeElapsedMin} timeElapsedSec={this.props.timeElapsedSec}
             startTimerClickHandler={this.startTimerClickHandler} finishGameHandler={this.props.finishGameHandler} />
-          <div className="cards__items" onClick={(e) => {turnСardsClickHandler(e)}} /*ref={this.cardsItems}*/></div>
+          <div className="cards__items" onClick={(e) => {turnСardsClickHandler(e)}} ></div>
         </div>
       </Fragment>
     );
