@@ -73,11 +73,11 @@ export function outputResult() {
   const sec = document.getElementById('sec');
   const minOfTimer =  parseInt(min.textContent, 10);
   const secOfTimer =  parseInt(sec.textContent.slice(1), 10);
-  popupTime.textContent = 3600 - minOfTimer * 60 * 10 - secOfTimer * 10; // вывод результата таймера
+  popupTime.textContent = 10000 - minOfTimer * 60 * 10 - secOfTimer * 10; // вывод результата таймера
   if (!popupGame.classList.contains('popup--show') ) {
     popupGame.classList.add('popup--show');
   }
-  getScoreFetch(); // получить запрос
+  getScoreFetch(); // получить запрос жо отправки своих данных
 }
 
 export default class App extends Component {
@@ -90,6 +90,7 @@ export default class App extends Component {
        timeElapsedMin: "00",
        timeElapsedSec: ":00"
     }
+    this.sendScoreClickHandler = this.sendScoreClickHandler.bind(this);
   }
 
   tick = () => {
@@ -148,12 +149,6 @@ export default class App extends Component {
     init(cardsItem); // инициализация игры
   }
 
-  // начало игры повторно
-  startGameAgainClickHandler = () => {
-    this.postScoreFetch(); // отправить на сервер результаты игры
-    this.startGameClickHandler();
-  }
-
   // выход из игры
   finishGameClickHandler = () => {
     const cardsItems = document.querySelector('.cards__items');
@@ -167,9 +162,14 @@ export default class App extends Component {
     }
   }
 
-  finishSuccessGameClickHandler = () => {
+  // отправить свой счёт
+  sendScoreClickHandler = () => {
+    const popupTable = document.querySelector('.popup__table');
     this.postScoreFetch(); // отправить на сервер результаты игры
-    this.finishGameClickHandler();
+    setTimeout(function() {
+      popupTable.innerHTML = ''; // удаление таблицы
+      getScoreFetch(); // получить данных после отправки своего результата
+    }, 500);
   }
 
   // отправить запрос
@@ -217,7 +217,8 @@ export default class App extends Component {
           <Cards timeElapsedMin={this.state.timeElapsedMin} timeElapsedSec={this.state.timeElapsedSec}
             startTimerClickHandler={this.startTimerClickHandler} finishGameHandler={this.finishGameClickHandler} />
         </section>
-        <PopupGame startGameAgainHandler={this.startGameAgainClickHandler} finishGameHandler={this.finishSuccessGameClickHandler} />
+        <PopupGame startGameHandler={this.startGameClickHandler}
+          finishGameHandler={this.finishGameClickHandler} sendScoreHandler={this.sendScoreClickHandler} />
       </Fragment>
     );
   }

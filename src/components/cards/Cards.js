@@ -132,7 +132,7 @@ export function init(obj) {
     randomMixArrays(); // добавить 24 карты
     addCards();
   } else {
-    randomMixArrays(0, 5); // добавить 10 карт
+    randomMixArrays(0, 5); // добавить 10 карт  
     addCards();
   }
   return memoryObj; // возврат объекта с инфой о выбранной рубашке и уровне сложности
